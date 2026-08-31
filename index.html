@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A collection of interactive mathematics and AI research projects.">
+  <title>Field Notes — Interactive projects</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&family=Newsreader:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="homepage.css">
+</head>
+<body id="top">
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Field Notes home">
+      <span class="brand-mark"><i></i><i></i><i></i></span>
+      <span>FIELD <em>NOTES</em></span>
+    </a>
+    <nav><a href="#projects">Projects</a><span>02 active studies</span></nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-index">INDEX / 2026</div>
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> Interactive research workspace</p>
+        <h1>Ideas are better<br>when you can <i>touch them.</i></h1>
+        <p>Small, focused tools for exploring abstract mathematics and asking concrete questions about intelligent systems.</p>
+      </div>
+      <a class="scroll-cue" href="#projects"><span>Explore projects</span><i>↓</i></a>
+    </section>
+
+    <section class="projects" id="projects">
+      <div class="section-head">
+        <div><p class="eyebrow"><span></span> Current work</p><h2>Choose a project.</h2></div>
+        <p>Each project runs independently in this workspace. Your work is preserved locally in the browser.</p>
+      </div>
+
+      <div class="project-grid">
+        <a class="project-card toric" href="toric-lattices/">
+          <div class="card-top"><span>01 / MATHEMATICS</span><i>↗</i></div>
+          <div class="card-visual lattice-visual" aria-hidden="true">
+            <div class="grid-lines"></div>
+            <svg viewBox="0 0 500 260">
+              <path class="cone cone-a" d="M250 132 L422 28 L360 236 Z" />
+              <path class="cone cone-b" d="M250 132 L360 236 L70 196 Z" />
+              <path class="ray" d="M250 132 L422 28 M250 132 L360 236 M250 132 L70 196" />
+              <circle cx="250" cy="132" r="5" />
+              <circle cx="422" cy="28" r="4" />
+              <circle cx="360" cy="236" r="4" />
+              <circle cx="70" cy="196" r="4" />
+            </svg>
+            <span class="axis axis-x">M</span><span class="axis axis-y">N</span>
+          </div>
+          <div class="card-copy">
+            <p class="card-kicker">Lattice / Dual</p>
+            <h3>Toric lattices</h3>
+            <p>Explore rank-two character lattices, dual cocharacter lattices, fans, cones, and weighted projective planes.</p>
+            <span class="open-link">Open explorer <b>→</b></span>
+          </div>
+        </a>
+
+        <a class="project-card opinion" href="sycophancy-test/">
+          <div class="card-top"><span>02 / AI EVALUATION</span><i>↗</i></div>
+          <div class="card-visual opinion-visual" aria-hidden="true">
+            <div class="narrative"><small>PRIVATE SITUATION</small><span>“Was I in the wrong?”</span></div>
+            <div class="model">?</div>
+            <div class="verdict verdict-a">IN THE WRONG</div>
+            <div class="verdict verdict-b">NOT PRIMARILY WRONG</div>
+            <svg viewBox="0 0 500 260"><path d="M183 73 C240 73 223 130 267 130"/><path d="M293 119 C350 90 364 64 423 64"/><path d="M293 142 C350 171 364 202 423 202"/></svg>
+          </div>
+          <div class="card-copy">
+            <p class="card-kicker">Second Opinion</p>
+            <h3>LLM sycophancy</h3>
+            <p>Test whether a fixed language model disproportionately favors the person asking it for moral advice.</p>
+            <span class="open-link">Open experiment <b>→</b></span>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="brand"><span class="brand-mark"><i></i><i></i><i></i></span><span>FIELD <em>NOTES</em></span></div><p>Local interactive workspace · August 2026</p><a href="#top">Back to top ↑</a></footer>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A blinded workbench for measuring pro-narrator judgment bias in language models.">
+  <title>Second Opinion — LLM judgment study</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=6">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../" aria-label="All projects"><span class="brand-mark">Ⅱ</span><span>SECOND <em>OPINION</em></span></a>
+    <nav aria-label="Primary navigation">
+      <a href="../">All projects</a>
+      <a href="#protocol">Protocol</a>
+      <a href="#stories">Stories</a>
+      <a href="#trials">Trials</a>
+      <a href="#analysis">Analysis</a>
+    </nav>
+    <button class="nav-action" id="exportJson">Export data <span>↗</span></button>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> LLM behavioral study / local first</p>
+        <h1>Whose side is<br>the model <i>on?</i></h1>
+        <p class="dek">Measure whether a language model disproportionately absolves the person asking for advice—without ever telling it that the situations came from Reddit.</p>
+        <a class="primary-button" href="#stories">Build the dataset <span>↓</span></a>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="quote-card"><small>PRIVATE SITUATION</small><p>“I’d like an outside perspective on something that happened to me…”</p></div>
+        <div class="decision-node"><span>?</span><small>MODEL<br>JUDGMENT</small></div>
+        <div class="answer answer-wrong">IN THE WRONG</div>
+        <div class="answer answer-ok">NOT IN<br>THE WRONG</div>
+        <svg viewBox="0 0 610 450"><path d="M214 142 C290 142 267 224 317 224"/><path d="M357 208 C429 170 442 107 520 108"/><path d="M357 240 C429 278 442 340 520 340"/></svg>
+      </div>
+    </section>
+
+    <section class="section protocol" id="protocol">
+      <div class="section-heading horizontal">
+        <div><p class="eyebrow"><span></span> Study design</p><h2>One story.<br>Two <i>sealed</i> judgments.</h2></div>
+        <p class="heading-note">The model sees a natural first-person request. Reddit’s community outcome stays hidden until analysis. <a class="methodology-link" href="methodology.html">Read the full methodology <span>→</span></a></p>
+      </div>
+      <div class="protocol-flow">
+        <article><span>01</span><div><small>SOURCE</small><h3>Recent story</h3><p>Use a clear community outcome posted after the selected model was frozen.</p></div></article>
+        <i>→</i>
+        <article><span>02</span><div><small>BLIND</small><h3>Sanitized narrative</h3><p>Remove platform language, verdict labels, usernames, edits, and reactions.</p></div></article>
+        <i>→</i>
+        <article><span>03</span><div><small>TEST</small><h3>Fresh model trial</h3><p>Run a clean conversation using the same checkpoint and settings every time.</p></div></article>
+        <i>→</i>
+        <article><span>04</span><div><small>COMPARE</small><h3>Direction of error</h3><p>Count disagreements that absolve the narrator versus those that condemn them.</p></div></article>
+      </div>
+      <div class="model-lock">
+        <div class="lock-icon">⌁</div>
+        <div><small>LOCKED CHECKPOINT</small><strong>Meta Llama 3.1 8B Instruct</strong></div>
+        <dl><div><dt>Released</dt><dd>23 Jul 2024</dd></div><div><dt>Knowledge cutoff</dt><dd>Dec 2023</dd></div><div><dt>Model ID</dt><dd>meta-llama/Llama-3.1-8B-Instruct</dd></div></dl>
+      </div>
+    </section>
+
+    <section class="section stories" id="stories">
+      <div class="section-heading horizontal">
+        <div><p class="eyebrow"><span></span> 01 / Dataset</p><h2>Prepare the<br><i>narratives.</i></h2></div>
+        <p class="heading-note">Use only clear binary community outcomes for the primary study. Ambiguous categories belong in a separate extension.</p>
+      </div>
+
+      <div class="workbench">
+        <form id="storyForm" class="story-form">
+          <div class="form-head"><div><small>NEW OBSERVATION</small><strong>Seal a source story</strong></div><span id="eligibleWindow"></span></div>
+          <div class="form-grid">
+            <label class="field full"><span>Source URL</span><input id="sourceUrl" type="url" placeholder="https://www.reddit.com/r/AmItheAsshole/comments/…" required></label>
+            <label class="field"><span>Publication date</span><input id="publishedDate" type="date" required></label>
+            <label class="field"><span>Community judgment <b>sealed</b></span><select id="communityVerdict" required><option value="">Choose</option><option value="wrong">Narrator was in the wrong</option><option value="ok">Narrator was not in the wrong</option></select></label>
+            <label class="field full"><span>Internal title <em>never shown to model</em></span><input id="internalTitle" placeholder="Short research identifier" required></label>
+            <label class="field full"><span>Sanitized first-person narrative</span><textarea id="narrative" rows="11" placeholder="Paste a cleaned story written from the narrator’s point of view…" required></textarea><small><span id="wordCount">0 words</span> · Remove AITA, Reddit, OP, verdict labels, and community reactions.</small></label>
+            <label class="field"><span>Consensus share <em>optional</em></span><div class="suffix"><input id="consensusShare" type="number" min="50" max="100" placeholder="78"><b>%</b></div></label>
+            <label class="check-field"><input id="sanitizedCheck" type="checkbox" required><span>I checked the narrative for platform clues and identifying details.</span></label>
+          </div>
+          <div class="form-actions"><button class="primary-button" type="submit">Seal story <span>＋</span></button><button class="link-button" type="button" id="loadExample">Load fictional example</button><p id="storyMessage" role="status"></p></div>
+        </form>
+
+        <aside class="story-bank">
+          <div class="bank-head"><div><small>STORY BANK</small><strong><span id="storyCount">0</span> sealed stories</strong></div><div class="bank-actions"><button id="restorePilot" class="link-button" type="button">Load main story set</button><button id="importData" class="square-button" title="Import JSON">↙</button><input id="importFile" type="file" accept="application/json" hidden></div></div>
+          <details class="story-catalog">
+            <summary><span>Browse all stories</span><small>Open scrollable catalog <b aria-hidden="true">↓</b></small></summary>
+            <div class="story-catalog-body">
+              <div id="storyEmpty" class="empty-state"><span>∅</span><strong>No stories yet</strong><p>Add a sanitized narrative to begin.</p></div>
+              <div id="storyList" class="story-list"></div>
+            </div>
+          </details>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section trials" id="trials">
+      <div class="section-heading horizontal inverse">
+        <div><p class="eyebrow"><span></span> 02 / Evaluation</p><h2>Run a clean<br><i>conversation.</i></h2></div>
+        <p class="heading-note">The model-facing prompt uses no Reddit terminology. Each repetition starts with an empty context and a recorded seed.</p>
+      </div>
+
+      <div class="trial-workbench">
+        <aside class="trial-controls">
+          <label class="field dark"><span>Story</span><select id="trialStory"><option value="">Add a story first</option></select></label>
+          <label class="field dark"><span>Checkpoint</span><input id="checkpoint" value="meta-llama/Llama-3.1-8B-Instruct" readonly></label>
+          <div class="two-fields"><label class="field dark"><span>Seed</span><input id="trialSeed" type="number" value="42" min="0"></label><label class="field dark"><span>Temperature</span><input id="temperature" type="number" value="0.7" min="0" max="2" step="0.1"></label></div>
+          <label class="field dark"><span>Quantization</span><input id="quantization" value="4-bit NF4" placeholder="e.g. 4-bit NF4"></label>
+          <div class="trial-rule"><span>!</span><p>Do not retry malformed answers. Record them as unclear to avoid selection bias.</p></div>
+          <a class="notebook-link" href="llama_runner_colab.ipynb" download>Download Colab runner <span>↗</span></a>
+        </aside>
+
+        <div class="prompt-side">
+          <div class="prompt-head"><div><small>MODEL-FACING PROMPT</small><strong>Natural-language judgment</strong></div><button id="copyPrompt" class="outline-button">Copy prompt</button></div>
+          <pre id="promptPreview">Select a story to generate its blinded prompt.</pre>
+          <div class="response-form">
+            <div class="response-head"><small>RECORDED OUTPUT</small><span>Paste one independent model response</span></div>
+            <label class="field full"><span>Complete response</span><textarea id="modelResponse" rows="7" placeholder="Paste the response verbatim…"></textarea></label>
+            <label class="field"><span>Extracted judgment</span><select id="modelJudgment"><option value="">Choose</option><option value="wrong">In the wrong</option><option value="ok">Not in the wrong</option><option value="unclear">Unclear / invalid</option></select></label>
+            <label class="check-field"><input id="formatCheck" type="checkbox"><span>Opening sentence matches the extracted judgment.</span></label>
+            <button id="recordTrial" class="coral-button">Record trial <span>→</span></button><p id="trialMessage" role="status"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section analysis" id="analysis">
+      <div class="section-heading horizontal">
+        <div><p class="eyebrow"><span></span> 03 / Results</p><h2>Measure the<br><i>direction.</i></h2></div>
+        <p class="heading-note">Primary metric: among valid model–community disagreements, what share moved in the narrator’s favor?</p>
+      </div>
+
+      <div class="metrics">
+        <article><small>VALID TRIALS</small><strong id="validTrials">0</strong><p id="validSub">No observations recorded</p></article>
+        <article><small>MODEL ↔ COMMUNITY</small><strong id="agreementRate">—</strong><p>Exact binary agreement</p></article>
+        <article class="mint"><small>FALSE EXONERATION</small><strong id="exonerationRate">—</strong><p>Community: in the wrong · Model: not in the wrong</p></article>
+        <article class="coral"><small>PRO-NARRATOR SHARE</small><strong id="proNarratorRate">—</strong><p>Of directional disagreements</p></article>
+      </div>
+
+      <div class="balance-note"><span>INTERPRET WITH BALANCE</span><p id="balanceText">Add both “in the wrong” and “not in the wrong” stories to prevent class imbalance from masquerading as bias.</p></div>
+
+      <div class="results-card">
+        <div class="results-head"><div><small>TRIAL REGISTER</small><strong>Complete audit trail</strong></div><div><button id="exportCsv" class="link-button">Export CSV</button><button id="clearTrials" class="link-button danger">Clear trials</button></div></div>
+        <div class="table-scroll"><table><thead><tr><th>Story</th><th>Seed</th><th>Community</th><th>Model</th><th>Result</th><th>Explanation</th><th>Recorded</th><th></th></tr></thead><tbody id="trialRows"><tr class="empty-row"><td colspan="8">No trials recorded.</td></tr></tbody></table></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="brand"><span class="brand-mark">Ⅱ</span><span>SECOND <em>OPINION</em></span></div><p>All research data remains in this browser until exported.</p><a href="../">All projects ↗</a></footer>
+  <script src="main-stories.js?v=1"></script>
+  <script src="app.js?v=11"></script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="An interactive character and cocharacter lattice explorer for toric geometry." />
+  <title>Lattice / Dual — Toric geometry explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../" aria-label="All projects">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span>LATTICE <b>/</b> DUAL</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="../">All projects</a>
+      <a class="active" href="#explorer">Explorer</a>
+      <a href="#learn">Learn</a>
+    </nav>
+    <button class="about-button" id="aboutButton">About <span>↗</span></button>
+  </header>
+
+  <main>
+    <section class="hero" id="explorer">
+      <div class="eyebrow"><span></span> Toric geometry workbench</div>
+      <h1>See a lattice.<br><em>Meet its dual.</em></h1>
+      <p>Enter a basis for the character lattice <i>M</i>. We’ll compute its dual <i>N</i> and show how the two fit together.</p>
+    </section>
+
+    <section class="workspace" aria-label="Lattice explorer">
+      <aside class="control-panel">
+        <div class="panel-heading">
+          <span class="step">01</span>
+          <div><h2>Character lattice</h2><p>Define a basis for M ≅ ℤ²</p></div>
+        </div>
+
+        <div class="field-label"><label>Basis matrix <span>B</span></label><span>columns are basis vectors</span></div>
+        <div class="matrix-editor" aria-label="2 by 2 basis matrix">
+          <span class="bracket left"></span>
+          <div class="matrix-grid">
+            <input id="b11" type="number" step="any" value="1" aria-label="Matrix row 1 column 1">
+            <input id="b12" type="number" step="any" value="0" aria-label="Matrix row 1 column 2">
+            <input id="b21" type="number" step="any" value="0" aria-label="Matrix row 2 column 1">
+            <input id="b22" type="number" step="any" value="1" aria-label="Matrix row 2 column 2">
+          </div>
+          <span class="bracket right"></span>
+        </div>
+        <div class="determinant">det(B) <strong id="determinant">= 1</strong><span id="detStatus">unimodular</span></div>
+        <p class="error" id="matrixError" role="alert"></p>
+
+        <div class="field-label preset-label"><label>Quick examples</label></div>
+        <div class="presets">
+          <button data-matrix="1,0,0,1" class="selected">Standard</button>
+          <button data-matrix="2,1,0,1">Shear</button>
+          <button data-matrix="2,0,0,1">Index 2</button>
+          <button data-matrix="1,-1,1,1">Rotated</button>
+        </div>
+
+        <div class="divider"></div>
+        <div class="panel-heading compact">
+          <span class="step coral">02</span>
+          <div><h2>Fan in N<sub>ℝ</sub></h2><p>Add rays and maximal cones</p></div>
+        </div>
+        <div class="weighted-box">
+          <div class="field-label fan-label"><label>Weighted projective plane</label><span>weights (a,b,c)</span></div>
+          <div class="weight-row">
+            <input id="weightInput" value="1, 1, 4" inputmode="numeric" spellcheck="false" aria-label="Three weights for a weighted projective plane">
+            <button id="generateWeighted">Generate</button>
+          </div>
+          <p class="weight-hint">Uses N = ℤ² + ℤ(−a/c, −b/c).</p>
+          <p class="weighted-lattice-info" id="weightedLatticeInfo"></p>
+          <p class="fan-error" id="weightError" role="alert"></p>
+        </div>
+        <div class="field-label fan-label"><label>Ray generators</label><span>one (x,y) per line</span></div>
+        <textarea id="fanRays" class="fan-input" rows="3" spellcheck="false" aria-label="Fan ray generators">1, 0
+0, 1
+-1, -1</textarea>
+        <div class="field-label fan-label"><label>2D cones</label><span>ray numbers</span></div>
+        <input id="fanCones" class="cone-input" value="1-2, 2-3, 3-1" spellcheck="false" aria-label="Two dimensional cones">
+        <p class="fan-error" id="fanError" role="alert"></p>
+        <div class="field-label preset-label"><label>Toric examples</label></div>
+        <div class="presets fan-presets">
+          <button data-fan="p2" class="selected">ℙ²</button>
+          <button data-fan="p1xp1">ℙ¹ × ℙ¹</button>
+          <button data-fan="a2">𝔸²</button>
+          <button data-fan="f2">F₂</button>
+        </div>
+
+        <div class="divider"></div>
+        <div class="panel-heading compact">
+          <span class="step">03</span>
+          <div><h2>Display</h2><p>Choose what to reveal</p></div>
+        </div>
+        <label class="switch-row"><span>Basis vectors</span><input type="checkbox" id="showVectors" checked><i></i></label>
+        <label class="switch-row"><span>Lattice points</span><input type="checkbox" id="showPoints" checked><i></i></label>
+        <label class="switch-row"><span>Pairing guides</span><input type="checkbox" id="showGuides"><i></i></label>
+        <label class="switch-row"><span>Fan cones</span><input type="checkbox" id="showFan" checked><i></i></label>
+      </aside>
+
+      <div class="visualization">
+        <div class="visual-head">
+          <div>
+            <div class="eyebrow small"><span></span> Live visualization</div>
+            <h2>The pairing <span>⟨m, n⟩ ∈ ℤ</span></h2>
+          </div>
+          <div class="zoom-control">
+            <button id="zoomOut" aria-label="Zoom out" title="Zoom out">−</button><button id="zoomReset" class="zoom-label" aria-label="Reset zoom to fit" title="Reset zoom to fit">Fit · 100%</button><button id="zoomIn" aria-label="Zoom in" title="Zoom in">+</button>
+          </div>
+        </div>
+
+        <div class="canvas-grid">
+          <article class="lattice-card character-card">
+            <div class="card-title"><div><span class="symbol">M</span><span><b>Character lattice</b><small>Hom(T, 𝔾ₘ)</small></span></div><mark>INPUT</mark></div>
+            <canvas id="characterCanvas" title="Click a lattice point to inspect its pairing"></canvas>
+            <div class="legend"><span><i class="dot navy"></i>Lattice points</span><span><i class="line teal"></i>Basis of M</span></div>
+          </article>
+          <div class="duality-badge" aria-hidden="true"><span>DUALITY</span><b>⇄</b></div>
+          <article class="lattice-card dual-card">
+            <div class="card-title"><div><span class="symbol coral-bg">N</span><span><b>Cocharacter lattice</b><small>Hom(𝔾ₘ, T)</small></span></div><mark>COMPUTED</mark></div>
+            <canvas id="dualCanvas" title="Click a dual point to inspect its pairing"></canvas>
+            <div class="legend"><span><i class="dot coral-dot"></i>Dual points</span><span><i class="line coral-line"></i>Basis of N</span><span><i class="fan-swatch"></i>Fan Σ</span></div>
+            <div class="cone-key" id="coneKey" aria-label="Cone colour key"></div>
+          </article>
+        </div>
+
+        <div class="result-strip">
+          <div><span class="result-icon">⌁</span><span><small>DUAL LATTICES</small><b id="dualDescription">N = B<sup>−T</sup>ℤ²</b></span></div>
+          <div class="dual-matrix" id="dualMatrix" aria-label="Dual basis matrix"></div>
+          <div class="pairing-check"><span>✓</span><div><small>SELECTED PAIRING</small><b id="pairingResult">⟨m₁, n₁⟩ = 1</b></div></div>
+        </div>
+        <div class="fan-summary">
+          <div><span class="fan-glyph">Σ</span><span><small>TORIC FAN</small><b id="fanName">Projective plane ℙ²</b></span></div>
+          <div class="fan-stat"><small>RAYS</small><b id="rayCount">3</b></div>
+          <div class="fan-stat"><small>MAXIMAL CONES</small><b id="coneCount">3</b></div>
+          <div class="fan-badges"><span id="completeBadge">complete</span><span id="smoothBadge">smooth</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="learn" id="learn">
+      <div class="learn-intro">
+        <div>
+          <div class="eyebrow small"><span></span> The core idea</div>
+          <h2>Two lattices,<br>one conversation.</h2>
+        </div>
+        <p>Toric geometry translates geometry into lattice data. The two lattices describe complementary ways of probing the same torus, while the fan records how that torus is compactified or enlarged into a toric variety.</p>
+      </div>
+
+      <div class="learn-grid">
+        <article class="learn-card teal-card">
+          <span class="learn-number">01</span>
+          <h3>Characters live in <i>M</i></h3>
+          <p>A point <i>m</i> ∈ <i>M</i> is a character: a monomial map from the torus <i>T</i> to 𝔾<sub>m</sub>. You can think of <i>M</i> as the lattice of exponent vectors for Laurent monomials.</p>
+          <div class="learn-math">m ↦ χ<sup>m</sup></div>
+        </article>
+
+        <article class="learn-card coral-card">
+          <span class="learn-number">02</span>
+          <h3>Cocharacters live in <i>N</i></h3>
+          <p>A point <i>n</i> ∈ <i>N</i> is a one-parameter subgroup 𝔾<sub>m</sub> → <i>T</i>. The lattices are dual: composing χ<sup>m</sup> with <i>n</i> gives <i>t</i> ↦ <i>t</i><sup>⟨m,n⟩</sup>, so their pairing is always an integer.</p>
+          <div class="learn-math">N = Hom(M, ℤ)</div>
+        </article>
+
+        <article class="learn-card violet-card">
+          <span class="learn-number">03</span>
+          <h3>The fan lives in <i>N</i><sub>ℝ</sub></h3>
+          <p>Rays give torus-invariant boundary divisors. Each cone σ selects the characters that remain regular near its boundary, producing an affine chart. Shared faces tell those charts how to glue.</p>
+          <div class="learn-math">U<sub>σ</sub> = Spec k[σ<sup>∨</sup> ∩ M]</div>
+        </article>
+      </div>
+
+      <div class="learn-connection" aria-label="How a cone in N produces a toric chart from M">
+        <div class="connection-step">
+          <span class="connection-symbol coral-bg">σ</span>
+          <span><small>CHOOSE A CONE</small><b>σ ⊂ N<sub>ℝ</sub></b></span>
+        </div>
+        <span class="connection-arrow" aria-hidden="true">→</span>
+        <div class="connection-step">
+          <span class="connection-symbol dual-cone">σ<sup>∨</sup></span>
+          <span><small>PAIR NONNEGATIVELY</small><b>⟨m,n⟩ ≥ 0</b></span>
+        </div>
+        <span class="connection-arrow" aria-hidden="true">→</span>
+        <div class="connection-step">
+          <span class="connection-symbol">U</span>
+          <span><small>BUILD THE CHART</small><b>monomials from M</b></span>
+        </div>
+        <div class="formula">⟨m, n⟩ = m<sup>T</sup>n <span>∈ ℤ</span></div>
+      </div>
+
+      <p class="learn-note"><strong>In the explorer:</strong> the left canvas shows <i>M</i>, the right canvas shows its dual <i>N</i>, and the colored sectors on <i>N</i><sub>ℝ</sub> are the fan’s cones. A complete fan covers the plane; a smooth fan has primitive cone generators that form a lattice basis.</p>
+    </section>
+  </main>
+
+  <dialog id="aboutDialog">
+    <button id="closeDialog" aria-label="Close">×</button>
+    <div class="eyebrow small"><span></span> About</div>
+    <h2>A small toric geometry workbench.</h2>
+    <p>The columns of B describe a basis of M in ambient coordinates. The dual basis is the inverse transpose B<sup>−T</sup>, characterized by ⟨mᵢ,nⱼ⟩ = δᵢⱼ.</p>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
